@@ -47,16 +47,19 @@ export function rutaValida(ruta: string, userId: string, casoId: string) {
 
 /** Ficha del paciente en texto, usada por el análisis y por el chat. */
 export function fichaPaciente(paciente: Paciente, caso: Pick<Caso, 'zona_afectada' | 'sintomas' | 'tiempo_evolucion'>) {
+  // Raza, sexo, zona y evolución solo existen en casos antiguos: se incluyen si hay dato.
   return [
     `Especie: ${paciente.especie}`,
-    `Raza: ${paciente.raza || 'no indicada'}`,
+    paciente.raza && `Raza: ${paciente.raza}`,
     `Edad: ${paciente.edad_anios != null ? `${paciente.edad_anios} años` : 'no indicada'}`,
     `Peso: ${paciente.peso_kg != null ? `${paciente.peso_kg} kg` : 'no indicado'}`,
-    `Sexo: ${paciente.sexo || 'no indicado'}`,
-    `Zona afectada: ${caso.zona_afectada}`,
-    `Síntomas observados: ${caso.sintomas || 'no indicados'}`,
-    `Tiempo de evolución: ${caso.tiempo_evolucion || 'no indicado'}`,
-  ].join('\n');
+    paciente.sexo && `Sexo: ${paciente.sexo}`,
+    caso.zona_afectada && `Zona afectada: ${caso.zona_afectada}`,
+    `Síntomas observados: ${caso.sintomas || 'no indicados (deduce la zona y los hallazgos de la imagen)'}`,
+    caso.tiempo_evolucion && `Tiempo de evolución: ${caso.tiempo_evolucion}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 
 /** Contexto completo del caso para el chat clínico. */

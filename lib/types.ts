@@ -45,7 +45,7 @@ export interface Paciente {
 export interface Caso {
   id: string;
   paciente_id: string;
-  zona_afectada: string;
+  zona_afectada: string | null;
   sintomas: string | null;
   tiempo_evolucion: string | null;
   estado: EstadoCaso;

@@ -28,14 +28,14 @@ export default async function HistorialPage({ searchParams }: { searchParams: Pr
   if (hasta) consulta = consulta.lte('creado_en', `${hasta}T23:59:59`);
   const termino = q.replace(/[,()%*\\]/g, ' ').trim(); // evita romper la sintaxis del filtro
   if (termino) {
-    consulta = consulta.or(`diagnostico_ia.ilike.%${termino}%,diagnostico_final.ilike.%${termino}%,zona_afectada.ilike.%${termino}%`);
+    consulta = consulta.or(`diagnostico_ia.ilike.%${termino}%,diagnostico_final.ilike.%${termino}%,sintomas.ilike.%${termino}%`);
   }
 
   const { data: casos, error } = await consulta;
 
   type Fila = {
     id: string;
-    zona_afectada: string;
+    zona_afectada: string | null;
     estado: string;
     urgencia: string | null;
     diagnostico_ia: string | null;
@@ -55,7 +55,7 @@ export default async function HistorialPage({ searchParams }: { searchParams: Pr
       </div>
 
       <form method="get" className="tarjeta grid gap-3 sm:grid-cols-[1fr_150px_160px_160px_auto]">
-        <input name="q" defaultValue={q} className="campo" placeholder="Buscar por diagnóstico o zona…" />
+        <input name="q" defaultValue={q} className="campo" placeholder="Buscar por diagnóstico o síntomas…" />
         <select name="especie" defaultValue={especie} className="campo">
           <option value="">Todas las especies</option>
           <option value="perro">Perros</option>
@@ -95,7 +95,7 @@ export default async function HistorialPage({ searchParams }: { searchParams: Pr
                     </p>
                     <p className="truncate text-sm text-slate-500">
                       {c.pacientes.nombre || 'Sin nombre'}
-                      {c.pacientes.raza ? ` · ${c.pacientes.raza}` : ''} · {c.zona_afectada}
+                      {c.zona_afectada ? ` · ${c.zona_afectada}` : ''}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">

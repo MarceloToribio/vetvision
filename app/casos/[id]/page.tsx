@@ -62,10 +62,12 @@ export default async function CasoPage({ params }: { params: Promise<{ id: strin
           </Link>
           <h1 className="mt-1 text-2xl font-semibold text-clinico-800">
             {paciente.especie === 'perro' ? '🐶' : '🐱'} {paciente.nombre || 'Paciente sin nombre'}
-            <span className="ml-2 text-base font-normal text-slate-500">· {caso.zona_afectada}</span>
+            {caso.zona_afectada && (
+              <span className="ml-2 text-base font-normal text-slate-500">· {caso.zona_afectada}</span>
+            )}
           </h1>
           <p className="text-sm text-slate-500">
-            {[paciente.raza, paciente.edad_anios != null && `${paciente.edad_anios} años`, paciente.peso_kg != null && `${paciente.peso_kg} kg`, paciente.sexo]
+            {[paciente.edad_anios != null && `${paciente.edad_anios} años`, paciente.peso_kg != null && `${paciente.peso_kg} kg`]
               .filter(Boolean)
               .join(' · ')}{' '}
             — {fecha}
@@ -107,8 +109,7 @@ export default async function CasoPage({ params }: { params: Promise<{ id: strin
             )}
             {caso.sintomas && (
               <p className="mt-4 text-sm text-slate-600">
-                <b>Síntomas:</b> {caso.sintomas}
-                {caso.tiempo_evolucion && <> · <b>Evolución:</b> {caso.tiempo_evolucion}</>}
+                <b>Síntomas observados:</b> {caso.sintomas}
               </p>
             )}
           </section>

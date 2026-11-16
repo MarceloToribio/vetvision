@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import Anthropic from '@anthropic-ai/sdk';
-import { anthropic, MODELO } from '@/lib/anthropic';
+import { anthropic, iaConfigurada, MENSAJE_SIN_CLAVE, MODELO } from '@/lib/anthropic';
 import { getUsuario } from '@/lib/supabase/server';
 import { fichaPaciente, imagenComoBloque } from '@/lib/caso-servidor';
 import { HERRAMIENTA_ANALISIS, PROMPT_ANALISIS } from '@/lib/prompts';
@@ -14,6 +14,7 @@ export const maxDuration = 60;
 export async function POST(req: Request) {
   const { supabase, user } = await getUsuario();
   if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+  if (!iaConfigurada()) return NextResponse.json({ error: MENSAJE_SIN_CLAVE }, { status: 503 });
 
   const body = z.object({ casoId: z.string().uuid() }).safeParse(await req.json().catch(() => null));
   if (!body.success) return NextResponse.json({ error: 'Petición inválida' }, { status: 400 });
@@ -80,6 +81,7 @@ export async function POST(req: Request) {
     if (err instanceof Anthropic.APIError) {
       if (err.status === 429) mensaje = 'El servicio de IA está saturado. Espera un momento y reintenta.';
       else if (err.status === 401) mensaje = 'La clave de la API de IA no es válida (revisa ANTHROPIC_API_KEY).';
+      else if (err.status === 404) mensaje = `El modelo "${MODELO}" no existe o no está disponible (revisa ANTHROPIC_MODEL).`;
       else if (err.status && err.status >= 500) mensaje = 'El servicio de IA no está disponible ahora mismo.';
     }
     return NextResponse.json({ error: mensaje }, { status: 502 });

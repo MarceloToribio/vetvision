@@ -29,7 +29,7 @@ const ATAJOS = [
   {
     etiqueta: 'Ajustar tratamiento',
     texto:
-      'Propón un plan de tratamiento detallado para este paciente: principios activos, dosis calculadas para su peso, vía, frecuencia, duración y controles. Señala contraindicaciones para su especie y raza.',
+      'Propón un plan de tratamiento detallado para este paciente: principios activos, dosis calculadas para su peso, vía, frecuencia, duración y controles. Señala contraindicaciones para su especie (y raza, si se conoce).',
   },
   {
     etiqueta: 'Explicar al dueño',

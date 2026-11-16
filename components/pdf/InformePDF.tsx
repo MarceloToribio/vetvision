@@ -70,12 +70,8 @@ export default function InformePDF({ caso, paciente, veterinario, imagenes, chat
           {[
             ['Nombre', paciente.nombre ?? '—'],
             ['Especie', paciente.especie],
-            ['Raza', paciente.raza ?? '—'],
             ['Edad', paciente.edad_anios != null ? `${paciente.edad_anios} años` : '—'],
             ['Peso', paciente.peso_kg != null ? `${paciente.peso_kg} kg` : '—'],
-            ['Sexo', paciente.sexo ?? '—'],
-            ['Zona afectada', caso.zona_afectada],
-            ['Evolución', caso.tiempo_evolucion ?? '—'],
           ].map(([k, v]) => (
             <View key={k} style={s.dato}>
               <Text style={s.etiqueta}>{k}</Text>
@@ -85,7 +81,7 @@ export default function InformePDF({ caso, paciente, veterinario, imagenes, chat
         </View>
         {caso.sintomas && (
           <View style={{ marginTop: 4 }}>
-            <Text style={s.etiqueta}>Síntomas</Text>
+            <Text style={s.etiqueta}>Síntomas observados</Text>
             <Text>{caso.sintomas}</Text>
           </View>
         )}

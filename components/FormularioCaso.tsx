@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { BUCKET, ZONAS } from '@/lib/constantes';
+import { BUCKET } from '@/lib/constantes';
 import ImageUploader from './ImageUploader';
 
 type Paso = 'formulario' | 'subiendo' | 'analizando';
@@ -16,13 +16,9 @@ export default function FormularioCaso() {
   const [f, setF] = useState({
     nombre: '',
     especie: 'perro',
-    raza: '',
     edad_anios: '',
     peso_kg: '',
-    sexo: '',
-    zona_afectada: ZONAS[0] as string,
     sintomas: '',
-    tiempo_evolucion: '',
   });
 
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -111,7 +107,7 @@ export default function FormularioCaso() {
     <form onSubmit={enviar} className="space-y-6">
       <section className="tarjeta">
         <h2 className="mb-4 text-lg font-semibold text-clinico-800">Paciente</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="etiqueta">Nombre (opcional)</label>
             <input className="campo" value={f.nombre} onChange={set('nombre')} placeholder="Ej. Luna" />
@@ -136,10 +132,6 @@ export default function FormularioCaso() {
             </div>
           </div>
           <div>
-            <label className="etiqueta">Raza</label>
-            <input className="campo" value={f.raza} onChange={set('raza')} placeholder="Ej. Labrador / Mestizo" />
-          </div>
-          <div>
             <label className="etiqueta">Edad (años)</label>
             <input className="campo" type="number" step="0.1" min="0" max="40" value={f.edad_anios} onChange={set('edad_anios')} />
           </div>
@@ -147,42 +139,17 @@ export default function FormularioCaso() {
             <label className="etiqueta">Peso (kg)</label>
             <input className="campo" type="number" step="0.1" min="0" max="150" value={f.peso_kg} onChange={set('peso_kg')} />
           </div>
-          <div>
-            <label className="etiqueta">Sexo</label>
-            <select className="campo" value={f.sexo} onChange={set('sexo')}>
-              <option value="">No indicado</option>
-              <option value="macho">Macho</option>
-              <option value="hembra">Hembra</option>
-            </select>
-          </div>
         </div>
       </section>
 
       <section className="tarjeta">
-        <h2 className="mb-4 text-lg font-semibold text-clinico-800">Cuadro clínico</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="etiqueta">Zona afectada *</label>
-            <select className="campo" value={f.zona_afectada} onChange={set('zona_afectada')}>
-              {ZONAS.map((z) => (
-                <option key={z}>{z}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="etiqueta">Tiempo de evolución</label>
-            <input className="campo" value={f.tiempo_evolucion} onChange={set('tiempo_evolucion')} placeholder="Ej. 2 semanas" />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="etiqueta">Síntomas observados</label>
-            <textarea
-              className="campo min-h-24"
-              value={f.sintomas}
-              onChange={set('sintomas')}
-              placeholder="Prurito intenso, se lame la zona, mal olor, tratamientos previos…"
-            />
-          </div>
-        </div>
+        <h2 className="mb-4 text-lg font-semibold text-clinico-800">Síntomas observados</h2>
+        <textarea
+          className="campo min-h-32"
+          value={f.sintomas}
+          onChange={set('sintomas')}
+          placeholder="Describe lo que observas: zona afectada, desde cuándo, prurito, mal olor, secreción, tratamientos previos…"
+        />
       </section>
 
       <section className="tarjeta">

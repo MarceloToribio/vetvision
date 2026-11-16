@@ -14,13 +14,9 @@ const NuevoCaso = z.object({
   id: z.string().uuid(),
   nombre: z.string().max(80).optional().default(''),
   especie: z.enum(['perro', 'gato']),
-  raza: z.string().max(80).optional().default(''),
   edad_anios: numeroOpcional,
   peso_kg: numeroOpcional,
-  sexo: z.enum(['macho', 'hembra', '']).optional().default(''),
-  zona_afectada: z.string().min(1).max(80),
   sintomas: z.string().max(3000).optional().default(''),
-  tiempo_evolucion: z.string().max(120).optional().default(''),
   imagenes: z.array(z.string()).min(1).max(MAX_IMAGENES),
 });
 
@@ -45,10 +41,8 @@ export async function POST(req: Request) {
       veterinario_id: user.id,
       nombre: d.nombre || null,
       especie: d.especie,
-      raza: d.raza || null,
       edad_anios: d.edad_anios,
       peso_kg: d.peso_kg,
-      sexo: d.sexo || null,
     })
     .select('id')
     .single();
@@ -58,9 +52,7 @@ export async function POST(req: Request) {
     id: d.id,
     veterinario_id: user.id,
     paciente_id: paciente.id,
-    zona_afectada: d.zona_afectada,
     sintomas: d.sintomas || null,
-    tiempo_evolucion: d.tiempo_evolucion || null,
   });
   if (errCaso) return NextResponse.json({ error: 'No se pudo guardar el caso' }, { status: 500 });
 

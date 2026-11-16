@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import type Anthropic from '@anthropic-ai/sdk';
-import { anthropic, MODELO } from '@/lib/anthropic';
+import { anthropic, iaConfigurada, MENSAJE_SIN_CLAVE, MODELO } from '@/lib/anthropic';
 import { getUsuario } from '@/lib/supabase/server';
 import { contextoCaso, imagenComoBloque, rutaValida } from '@/lib/caso-servidor';
 import { PROMPT_CHAT, PROMPT_RESUMEN } from '@/lib/prompts';
@@ -22,6 +22,7 @@ const Peticion = z.object({
 export async function POST(req: Request) {
   const { supabase, user } = await getUsuario();
   if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+  if (!iaConfigurada()) return NextResponse.json({ error: MENSAJE_SIN_CLAVE }, { status: 503 });
 
   const parsed = Peticion.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Petición inválida' }, { status: 400 });

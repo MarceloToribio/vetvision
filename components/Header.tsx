@@ -4,6 +4,8 @@ import BotonSalir from './BotonSalir';
 
 export default async function Header() {
   const { user } = await getUsuario();
+  // Con acceso directo no hay sesión que cerrar
+  const accesoDirecto = Boolean(process.env.ACCESO_EMAIL && process.env.ACCESO_PASSWORD);
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -23,7 +25,7 @@ export default async function Header() {
             <Link href="/casos/nuevo" className="boton py-1.5 text-sm">
               + Nuevo caso
             </Link>
-            <BotonSalir />
+            {!accesoDirecto && <BotonSalir />}
           </nav>
         )}
       </div>

@@ -41,7 +41,9 @@ export async function POST(req: Request) {
       max_tokens: 4096,
       system: PROMPT_ANALISIS,
       tools: [HERRAMIENTA_ANALISIS as Anthropic.Tool],
-      tool_choice: { type: 'tool', name: HERRAMIENTA_ANALISIS.name },
+      // Este modelo no admite forzar la herramienta (tool_choice "tool"/"any"):
+      // se usa "auto" y el prompt exige llamarla; si responde en texto, se extrae el JSON.
+      tool_choice: { type: 'auto' },
       messages: [
         {
           role: 'user',
@@ -56,10 +58,7 @@ export async function POST(req: Request) {
       ],
     });
 
-    const bloqueTool = respuesta.content.find((b) => b.type === 'tool_use');
-    if (!bloqueTool || bloqueTool.type !== 'tool_use') throw new Error('La IA no devolvió un análisis estructurado');
-
-    const analisis = AnalisisSchema.parse(bloqueTool.input);
+    const analisis = AnalisisSchema.parse(extraerAnalisis(respuesta));
 
     await supabase
       .from('casos')
@@ -86,4 +85,22 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ error: mensaje }, { status: 502 });
   }
+}
+
+/** Obtiene el JSON del análisis: de la llamada a la herramienta o, si no, del texto. */
+function extraerAnalisis(respuesta: Anthropic.Message): unknown {
+  const tool = respuesta.content.find((b) => b.type === 'tool_use');
+  if (tool && tool.type === 'tool_use') return tool.input;
+
+  const texto = respuesta.content.map((b) => (b.type === 'text' ? b.text : '')).join('');
+  const inicio = texto.indexOf('{');
+  const fin = texto.lastIndexOf('}');
+  if (inicio !== -1 && fin > inicio) {
+    try {
+      return JSON.parse(texto.slice(inicio, fin + 1));
+    } catch {
+      /* cae al error de abajo */
+    }
+  }
+  throw new Error('La IA no devolvió un análisis estructurado');
 }
